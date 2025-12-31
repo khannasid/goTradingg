@@ -59,16 +59,21 @@ export default function App() {
   }, []);
 
   return (
-    <div style={{ padding: "20px", fontFamily: "Arial" }}>
+    <div style={{ padding: "24px" }}>
       <h1>📈 goTradingg</h1>
 
-      <OrderForm />
+      <div className="card">
+        <OrderForm />
+      </div>
 
-      <hr />
+      <div style={{ display: "flex", gap: "24px", marginTop: "24px" }}>
+        <div className="card">
+          <OrderBook orderBook={orderBook} />
+        </div>
 
-      <div style={{ display: "flex", gap: "40px" }}>
-        <OrderBook orderBook={orderBook} />
-        <Trades trades={trades} />
+        <div className="card">
+          <Trades trades={trades} />
+        </div>
       </div>
     </div>
   );
