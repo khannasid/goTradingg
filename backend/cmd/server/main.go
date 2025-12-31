@@ -13,7 +13,8 @@ func main(){
 		Symbol : "TSLA",
 	}
 
-	handler := transport.NewHTTPHandler(ob)
+	broadcaster := transport.NewTradeBroadcaster()
+	handler := transport.NewHTTPHandler(ob, broadcaster)
 
 	log.Println("🚀 goTradingg server running on :8080")
 	log.Fatal(http.ListenAndServe(":8080", handler))

@@ -1,3 +1,14 @@
+/*
+If asked:
+“Where does the goroutine for the WebSocket client come from?”
+
+You can confidently say:
+“In Go’s net/http server, each request handler already runs in its own goroutine. 
+The WebSocket connection lives for the lifetime of that handler, 
+so the blocking read loop naturally runs inside that goroutine without needing 
+to spawn a separate one.”
+*/
+
 package transport
 
 import (
@@ -13,6 +24,7 @@ import (
 
 type HTTPHandler struct {
 	ob *orderbook.OrderBook
+	broadcaster *TradeBroadcaster
 }
 
 type PlaceOrderRequest struct {
@@ -45,6 +57,10 @@ func (h *HTTPHandler) placeOrder(w http.ResponseWriter, r *http.Request) {
 	h.ob.AddOrder(order)
 	trades := h.ob.Match()
 
+	for _, trade := range trades{
+		h.broadcaster.Broadcast(trade)
+	}
+
 	response := map[string]interface{}{
 		"order_id": order.ID,
 		"trades":   trades,
@@ -65,12 +81,13 @@ func (h *HTTPHandler) getOrderBook(w http.ResponseWriter, r *http.Request) {
 }
 
 
-func NewHTTPHandler(ob *orderbook.OrderBook) http.Handler {
-	h := &HTTPHandler{ob: ob}
+func NewHTTPHandler(ob *orderbook.OrderBook, b *TradeBroadcaster) http.Handler {
+	h := &HTTPHandler{ob: ob, broadcaster: b}
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("/order", h.placeOrder)
 	mux.HandleFunc("/orderbook", h.getOrderBook)
+	mux.HandleFunc("/ws/trades", h.tradeWS)
 
-	return mux
+	return withCORS(mux)
 }
