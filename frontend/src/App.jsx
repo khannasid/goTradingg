@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import OrderForm from "./components/OrderForm";
 import Trades from "./components/Trades";
 import OrderBook from "./components/OrderBook";
+import PriceChart from "./components/PriceChart";
 
 export default function App() {
   const [trades, setTrades] = useState([]);
@@ -12,45 +13,22 @@ export default function App() {
 
   // WebSocket for live trades
   useEffect(() => {
-  let ws;
-
-  try {
-    ws = new WebSocket("ws://localhost:8080/ws/trades");
-
-    ws.onopen = () => {
-      console.log("WebSocket connected");
-    };
+    const ws = new WebSocket("ws://localhost:8080/ws/trades");
 
     ws.onmessage = (event) => {
       const trade = JSON.parse(event.data);
       setTrades((prev) => [trade, ...prev]);
     };
 
-    ws.onerror = (err) => {
-      console.error("WebSocket error", err);
-    };
-  } catch (err) {
-    console.error("WebSocket init failed", err);
-  }
+    return () => ws.close();
+  }, []);
 
-  return () => {
-    if (ws && ws.readyState === WebSocket.OPEN) {
-      ws.close();
-    }
-  };
-}, []);
-
-
-  // Poll order book (simple & reliable for now)
+  // Poll order book
   useEffect(() => {
     const fetchOrderBook = async () => {
-      try {
-        const res = await fetch("http://localhost:8080/orderbook");
-        const data = await res.json();
-        setOrderBook(data);
-      } catch (err) {
-        console.error("Failed to fetch orderbook", err);
-      }
+      const res = await fetch("http://localhost:8080/orderbook");
+      const data = await res.json();
+      setOrderBook(data);
     };
 
     fetchOrderBook();
@@ -59,20 +37,34 @@ export default function App() {
   }, []);
 
   return (
-    <div style={{ padding: "24px" }}>
-      <h1>📈 goTradingg</h1>
+    <div className="container">
+      {/* Heading */}
+      <div className="center">
+        <h1>📈 goTradingg</h1>
+        <p style={{ color: "var(--muted)" }}>
+          Real-time trading simulator powered by Go & WebSockets
+        </p>
+      </div>
 
-      <div className="card">
+      {/* Order Form */}
+      <div className="card section">
         <OrderForm />
       </div>
 
-      <div style={{ display: "flex", gap: "24px", marginTop: "24px" }}>
+      {/* Trades */}
+      <div className="card section">
+        <Trades trades={trades} />
+      </div>
+
+      {/* OrderBook + Chart */}
+      <div className="grid section">
         <div className="card">
           <OrderBook orderBook={orderBook} />
         </div>
 
         <div className="card">
-          <Trades trades={trades} />
+          <h3>Price Chart</h3>
+          <PriceChart trades={trades} />
         </div>
       </div>
     </div>
