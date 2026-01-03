@@ -6,6 +6,7 @@ import PriceChart from "./components/PriceChart";
 
 export default function App() {
   const [trades, setTrades] = useState([]);
+const API_BASE = import.meta.env.VITE_API_BASE_URL;
   const [orderBook, setOrderBook] = useState({
     buy_orders: [],
     sell_orders: [],
@@ -13,7 +14,7 @@ export default function App() {
 
   // WebSocket for live trades
   useEffect(() => {
-    const ws = new WebSocket("ws://localhost:8080/ws/trades");
+    const ws = new WebSocket(`ws://${API_BASE.replace("http://", "")}/ws/trades`);
 
     ws.onmessage = (event) => {
       const trade = JSON.parse(event.data);
@@ -26,7 +27,7 @@ export default function App() {
   // Poll order book
   useEffect(() => {
     const fetchOrderBook = async () => {
-      const res = await fetch("http://localhost:8080/orderbook");
+      const res = await fetch(`${API_BASE}/orderbook`);
       const data = await res.json();
       setOrderBook(data);
     };

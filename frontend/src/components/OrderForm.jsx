@@ -4,6 +4,7 @@ export default function OrderForm() {
   const [side, setSide] = useState("BUY");
   const [price, setPrice] = useState("");
   const [quantity, setQuantity] = useState("");
+  const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
   const submitOrder = async () => {
     const parsedPrice = Number(price);
@@ -11,7 +12,7 @@ export default function OrderForm() {
 
     if (!parsedPrice || !parsedQty) return;
 
-    await fetch("http://localhost:8080/order", {
+    await fetch(`${API_BASE}/order`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
