@@ -7,6 +7,8 @@ import PriceChart from "./components/PriceChart";
 export default function App() {
   const [trades, setTrades] = useState([]);
 const API_BASE = import.meta.env.VITE_API_BASE_URL;
+// Convert API base to WS base safely
+const WS_BASE = API_BASE.replace(/^http/, "ws");
   const [orderBook, setOrderBook] = useState({
     buy_orders: [],
     sell_orders: [],
@@ -14,7 +16,7 @@ const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
   // WebSocket for live trades
   useEffect(() => {
-    const ws = new WebSocket(`ws://${API_BASE.replace("http://", "")}/ws/trades`);
+    const ws = new WebSocket(`${WS_BASE}/ws/trades`);
 
     ws.onmessage = (event) => {
       const trade = JSON.parse(event.data);
