@@ -8,7 +8,7 @@ and production DevOps practices**.
 
 ---
 
-## 🔥 Key Highlights (Recruiter-Friendly)
+## 🔥 Key Highlight (Recruiter-Friendly)
 - Real-time trading system (BUY/SELL matching)
 - Go-based concurrency-safe matching engine
 - WebSocket (WSS) live trade streaming
