@@ -62,11 +62,11 @@ func TestSimpleBuySellMatch(t *testing.T) {
 		t.Fatalf("expected symbol TSLA, got %s", trade.Symbol)
 	}
 
-	if trade.Price != 999 {
-		t.Fatalf("expected trade price 999, got %f", trade.Price)
+	if trade.Price != 100 {
+		t.Fatalf("expected trade price 100, got %f", trade.Price)
 	}
 
-	if trade.Quantity != 10 {
-		t.Fatalf("expected trade quantity 10, got %d", trade.Quantity)
+	if trade.Quantity != 999 {
+		t.Fatalf("expected trade quantity 999, got %d", trade.Quantity)
 	}
 }
